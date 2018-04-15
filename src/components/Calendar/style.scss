@@ -21,5 +21,9 @@
     &-right {
       justify-content: flex-end;
     }
+
+    &-main {
+      flex-direction: column;
+    }
   }
 }

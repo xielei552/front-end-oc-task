@@ -23,8 +23,45 @@ class Calendar extends Component {
       month: Moment().month(),
       year: Moment().year()
     };
+
+    this.onClickPrev = () => {
+      let month = null;
+      let year = null;
+      if (this.state.month === 0) {
+        month = 11;
+        year = this.state.year - 1;
+      } else {
+        month = this.state.month - 1;
+        year = this.state.year;
+      }
+
+      this.setState({
+        month: month,
+        year: year
+      });
+    };
+
+    this.onClickNext = () => {
+      let month = null;
+      let year = null;
+      if (this.state.month === 11) {
+        month = 11;
+        year = this.state.year + 1;
+      } else {
+        month = this.state.month + 1;
+        year = this.state.year;
+      }
+
+      this.setState({
+        month: month,
+        year: year
+      });
+    };
   }
   render() {
+    const { year, month } = this.state;
+    console.log('this.state.year', year);
+    console.log('this.state.month', month);
     const moment = extendMoment(Moment);
     const calendar = getCalendar(this.state.year, this.state.month);
     console.log('calendar: ', calendar);
@@ -47,7 +84,6 @@ class Calendar extends Component {
         ))
       )
     );
-    console.log('renderCalendarDate', renderCalendarDate);
 
     const rednerTableHeader = map(weekArray, item => (
       <TableHeaderColumn key={item}>{item}</TableHeaderColumn>
@@ -55,12 +91,18 @@ class Calendar extends Component {
     return (
       <div className="calendar">
         <div className="calendar__header" style={{ backgroundColor: tealA400 }}>
-          <div className="calendar__header-left">
-            <i class="fas fa-angle-left" />
+          <div className="calendar__header-left" onMouseDown={this.onClickPrev}>
+            <i className="fas fa-angle-left" />
           </div>
-          <div className="calendar__header-main">main</div>
-          <div className="calendar__header-right">
-            <i class="fas fa-angle-right" />
+          <div className="calendar__header-main">
+            <h1>{moment([year, month]).format('MMMM')}</h1>
+            <h2>{year}</h2>
+          </div>
+          <div
+            className="calendar__header-right"
+            onMouseDown={this.onClickNext}
+          >
+            <i className="fas fa-angle-right" />
           </div>
         </div>
         <Table>
