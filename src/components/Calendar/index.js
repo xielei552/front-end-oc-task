@@ -1,52 +1,73 @@
-import { map } from 'lodash';
+import { map, chain } from 'lodash';
 import React, { Component } from 'react';
 import Moment from 'moment';
 import { extendMoment } from 'moment-range';
+
 import getCalendar from '../utils';
-import { Table, TableHeader, TableBody, TableRow, TableHeaderColumn, TableRowColumn } from 'material-ui/Table';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHeaderColumn,
+  TableRowColumn
+} from 'material-ui/Table';
+import { white, tealA400 } from 'material-ui/styles/colors';
+import './style.css';
 
 class Calendar extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      month: Moment().month(),
+      year: Moment().year()
+    };
+  }
   render() {
     const moment = extendMoment(Moment);
+    const calendar = getCalendar(this.state.year, this.state.month);
+    console.log('calendar: ', calendar);
     const weekArray = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-    const start = moment('2011-04-15', 'YYYY-MM-DD');
-    const end = moment('2020-11-27', 'YYYY-MM-DD');
-    const range = moment.range(start, end);
-    console.log('range', range);
-    console.log('calendar', moment().calendar());
-    console.log('getCalendar', getCalendar(2018, 0));
+    const thruDate = chain(calendar)
+      .map((week, key) =>
+        chain(
+          Array.from(week.by('day')).map(m => (
+            <TableRowColumn key={m.format('D')}>{m.format('D')}</TableRowColumn>
+          ))
+        )
+          .thru(row => <TableRow key={`row_${key}`}>{row}</TableRow>)
+          .value()
+      )
+      .value();
+    const renderCalendarDate = map(calendar, week =>
+      map(
+        Array.from(week.by('day'), m => (
+          <TableRowColumn key={m.format('D')}>{m.format('D')}</TableRowColumn>
+        ))
+      )
+    );
+    console.log('renderCalendarDate', renderCalendarDate);
 
-    const rednerTableHeader = map(weekArray, item => (<TableHeaderColumn>{item}</TableHeaderColumn>));
+    const rednerTableHeader = map(weekArray, item => (
+      <TableHeaderColumn key={item}>{item}</TableHeaderColumn>
+    ));
     return (
-      <div className="calender-table">
+      <div className="calendar">
+        <div className="calendar__header" style={{ backgroundColor: tealA400 }}>
+          <div className="calendar__header-left">
+            <i class="fas fa-angle-left" />
+          </div>
+          <div className="calendar__header-main">main</div>
+          <div className="calendar__header-right">
+            <i class="fas fa-angle-right" />
+          </div>
+        </div>
         <Table>
           <TableHeader displaySelectAll={false}>
-            <TableRow>
-              {rednerTableHeader}
-            </TableRow>
+            <TableRow>{rednerTableHeader}</TableRow>
           </TableHeader>
-          <TableBody displayRowCheckbox={false}>
-            <TableRow>
-              <TableRowColumn>1</TableRowColumn>
-              <TableRowColumn>John Smith</TableRowColumn>
-              <TableRowColumn>Employed</TableRowColumn>
-            </TableRow>
-            <TableRow>
-              <TableRowColumn>2</TableRowColumn>
-              <TableRowColumn>Randal White</TableRowColumn>
-              <TableRowColumn>Unemployed</TableRowColumn>
-            </TableRow>
-            <TableRow>
-              <TableRowColumn>3</TableRowColumn>
-              <TableRowColumn>Stephanie Sanders</TableRowColumn>
-              <TableRowColumn>Employed</TableRowColumn>
-            </TableRow>
-            <TableRow>
-              <TableRowColumn>4</TableRowColumn>
-              <TableRowColumn>Steve Brown</TableRowColumn>
-              <TableRowColumn>Employed</TableRowColumn>
-            </TableRow>
-          </TableBody>
+          <TableBody displayRowCheckbox={false}>{thruDate}</TableBody>
         </Table>
       </div>
     );
