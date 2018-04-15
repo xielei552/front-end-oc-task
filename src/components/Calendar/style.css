@@ -1,0 +1,13 @@
+.calendar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 10rem;
+  align-items: stretch; }
+  .calendar__header-left, .calendar__header-main, .calendar__header-right {
+    display: flex;
+    align-items: center; }
+  .calendar__header-left, .calendar__header-right {
+    width: 20%; }
+  .calendar__header-right {
+    justify-content: flex-end; }

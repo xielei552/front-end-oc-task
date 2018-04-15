@@ -1,0 +1,25 @@
+.calendar {
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 10rem;
+    align-items: stretch;
+
+    &-left,
+    &-main,
+    &-right {
+      display: flex;
+      align-items: center;
+    }
+
+    &-left,
+    &-right {
+      width: 20%;
+    }
+
+    &-right {
+      justify-content: flex-end;
+    }
+  }
+}
