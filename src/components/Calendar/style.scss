@@ -26,4 +26,32 @@
       flex-direction: column;
     }
   }
+
+  &__main {
+    thead {
+      background-color: #e0e0e0;
+      border: 0 !important;
+      th {
+        color: #757575 !important;
+        border: 0 !important;
+        text-align: center !important;
+      }
+      th:first-child {
+        display: none !important;
+      }
+    }
+    tbody {
+      background-color: #eeeeee;
+    }
+    tr,
+    th {
+      border: 0 !important;
+    }
+    td {
+      text-align: center !important;
+    }
+    .date-muted {
+      color: #bdbdbd;
+    }
+  }
 }

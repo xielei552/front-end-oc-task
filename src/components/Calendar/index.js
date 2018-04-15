@@ -69,9 +69,14 @@ class Calendar extends Component {
     const thruDate = chain(calendar)
       .map((week, key) =>
         chain(
-          Array.from(week.by('day')).map(m => (
-            <TableRowColumn key={m.format('D')}>{m.format('D')}</TableRowColumn>
-          ))
+          Array.from(week.by('day')).map(m => {
+            const ColumnClassName = m.month() !== month ? 'date-muted' : '';
+            return (
+              <TableRowColumn key={m.format('D')} className={ColumnClassName}>
+                {m.format('D')}
+              </TableRowColumn>
+            );
+          })
         )
           .thru(row => <TableRow key={`row_${key}`}>{row}</TableRow>)
           .value()
@@ -105,7 +110,7 @@ class Calendar extends Component {
             <i className="fas fa-angle-right" />
           </div>
         </div>
-        <Table>
+        <Table className="calendar__main">
           <TableHeader displaySelectAll={false}>
             <TableRow>{rednerTableHeader}</TableRow>
           </TableHeader>

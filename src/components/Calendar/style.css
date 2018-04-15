@@ -13,3 +13,26 @@
     justify-content: flex-end; }
   .calendar__header-main {
     flex-direction: column; }
+
+.calendar__main thead {
+  background-color: #e0e0e0;
+  border: 0 !important; }
+  .calendar__main thead th {
+    color: #757575 !important;
+    border: 0 !important;
+    text-align: center !important; }
+  .calendar__main thead th:first-child {
+    display: none !important; }
+
+.calendar__main tbody {
+  background-color: #eeeeee; }
+
+.calendar__main tr,
+.calendar__main th {
+  border: 0 !important; }
+
+.calendar__main td {
+  text-align: center !important; }
+
+.calendar__main .date-muted {
+  color: #bdbdbd; }
