@@ -76,9 +76,6 @@ class Calendar extends Component {
 
     this.handleClick = event => {
       event.preventDefault();
-      console.log('clicked');
-      console.log('event', event);
-      console.log('event key', event.currentTarget.getAttribute('id'));
 
       this.setState({
         open: true,
@@ -95,7 +92,6 @@ class Calendar extends Component {
 
     this.onClickSave = () => {
       const notes = this.state[this.state.selectedDate] || [];
-      console.log('notes', notes);
       this.setState({
         [this.state.selectedDate]: concat(notes, {
           hour: this.state.hour,
@@ -106,17 +102,17 @@ class Calendar extends Component {
     };
   }
   render() {
-    const { year, month, anchorEl, hour, minute, note } = this.state;
-    console.log('this.state', this.state);
-    console.log('this.state.year', year);
-    console.log('this.state.month', month);
-    console.log('this.state.anchorEl', anchorEl);
-    console.log('this.state.hour', hour);
-    console.log('this.state.minute', minute);
-    console.log('this.state.note', note);
+    const {
+      year,
+      month,
+      anchorEl,
+      hour,
+      minute,
+      note,
+      selectedDate
+    } = this.state;
     const moment = extendMoment(Moment);
-    const calendar = getCalendar(this.state.year, this.state.month);
-    console.log('calendar: ', calendar);
+    const calendar = getCalendar(year, month);
     const weekArray = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
     const thruDate = chain(calendar)
       .map((week, key) =>
@@ -159,15 +155,14 @@ class Calendar extends Component {
       <TableHeaderColumn key={item}>{item}</TableHeaderColumn>
     ));
 
-    const renderNotes = chain(this.state[this.state.selectedDate])
+    const renderNotes = chain(this.state[selectedDate])
       .orderBy(['hour', 'asc'], ['minute', 'asc'])
       .map((item, index) => (
         <li key={index}>
-          {Moment(parseInt(this.state.selectedDate)).format('MMMM YYYY')}{' '}
-          {item.hour}
-          {'-'}
+          {Moment(parseInt(selectedDate)).format('MMMM YYYY')} {item.hour}
+          {':'}
           {item.minute}
-          {' : '}
+          {' - '}
           {item.note}
         </li>
       ))
