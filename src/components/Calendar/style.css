@@ -9,6 +9,8 @@
     align-items: center; }
   .calendar__header-left, .calendar__header-right {
     width: 20%; }
+  .calendar__header-left:hover, .calendar__header-right:hover {
+    cursor: pointer; }
   .calendar__header-right {
     justify-content: flex-end; }
   .calendar__header-main {
@@ -21,8 +23,6 @@
     color: #757575 !important;
     border: 0 !important;
     text-align: center !important; }
-  .calendar__main thead th:first-child {
-    display: none !important; }
 
 .calendar__main tbody {
   background-color: #eeeeee; }
@@ -34,5 +34,22 @@
 .calendar__main td {
   text-align: center !important; }
 
+.calendar__main td:hover {
+  cursor: pointer; }
+
+.calendar__main td:hover {
+  background-color: #e0e0e0 !important; }
+
 .calendar__main .date-muted {
   color: #bdbdbd; }
+
+.calendar__main .date-current {
+  background-color: #00bfa5 !important; }
+
+.calendar__popover {
+  display: flex;
+  flex-direction: column;
+  margin: 2rem; }
+
+.calendar__notes li {
+  text-align: left; }

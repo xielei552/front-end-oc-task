@@ -18,6 +18,11 @@
       width: 20%;
     }
 
+    &-left:hover,
+    &-right:hover {
+      cursor: pointer;
+    }
+
     &-right {
       justify-content: flex-end;
     }
@@ -36,9 +41,6 @@
         border: 0 !important;
         text-align: center !important;
       }
-      th:first-child {
-        display: none !important;
-      }
     }
     tbody {
       background-color: #eeeeee;
@@ -50,8 +52,28 @@
     td {
       text-align: center !important;
     }
+    td:hover {
+      cursor: pointer;
+    }
+    td:hover {
+      background-color: #e0e0e0 !important;
+    }
     .date-muted {
       color: #bdbdbd;
+    }
+    .date-current {
+      background-color: #00bfa5 !important;
+    }
+  }
+
+  &__popover {
+    display: flex;
+    flex-direction: column;
+    margin: 2rem;
+  }
+  &__notes {
+    li {
+      text-align: left;
     }
   }
 }

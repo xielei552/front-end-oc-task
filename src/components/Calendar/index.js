@@ -1,4 +1,4 @@
-import { map, chain } from 'lodash';
+import { map, chain, concat, praseInt } from 'lodash';
 import React, { Component } from 'react';
 import Moment from 'moment';
 import { extendMoment } from 'moment-range';
@@ -12,7 +12,10 @@ import {
   TableHeaderColumn,
   TableRowColumn
 } from 'material-ui/Table';
-import { white, tealA400 } from 'material-ui/styles/colors';
+import Popover from 'material-ui/Popover';
+import TextField from 'material-ui/TextField';
+import RaisedButton from 'material-ui/RaisedButton';
+import { grey100, tealA700 } from 'material-ui/styles/colors';
 import './style.css';
 
 class Calendar extends Component {
@@ -21,7 +24,14 @@ class Calendar extends Component {
 
     this.state = {
       month: Moment().month(),
-      year: Moment().year()
+      year: Moment().year(),
+      open: false,
+      date: {},
+      anchorEl: {},
+      selectedDate: null,
+      hour: '',
+      minute: '',
+      note: ''
     };
 
     this.onClickPrev = () => {
@@ -45,7 +55,7 @@ class Calendar extends Component {
       let month = null;
       let year = null;
       if (this.state.month === 11) {
-        month = 11;
+        month = 0;
         year = this.state.year + 1;
       } else {
         month = this.state.month + 1;
@@ -57,11 +67,53 @@ class Calendar extends Component {
         year: year
       });
     };
+
+    this.handleRequestClose = e => {
+      this.setState({
+        open: false
+      });
+    };
+
+    this.handleClick = event => {
+      event.preventDefault();
+      console.log('clicked');
+      console.log('event', event);
+      console.log('event key', event.currentTarget.getAttribute('id'));
+
+      this.setState({
+        open: true,
+        anchorEl: event.currentTarget,
+        selectedDate: event.currentTarget.getAttribute('id')
+      });
+    };
+
+    this.handleInputChange = event => {
+      this.setState({
+        [event.target.id]: event.target.value
+      });
+    };
+
+    this.onClickSave = () => {
+      const notes = this.state[this.state.selectedDate] || [];
+      console.log('notes', notes);
+      this.setState({
+        [this.state.selectedDate]: concat(notes, {
+          hour: this.state.hour,
+          minute: this.state.minute,
+          note: this.state.note
+        })
+      });
+    };
   }
   render() {
-    const { year, month } = this.state;
+    const { year, month, anchorEl, hour, minute, note } = this.state;
+    console.log('this.state', this.state);
     console.log('this.state.year', year);
     console.log('this.state.month', month);
+    console.log('this.state.anchorEl', anchorEl);
+    console.log('this.state.hour', hour);
+    console.log('this.state.minute', minute);
+    console.log('this.state.note', note);
     const moment = extendMoment(Moment);
     const calendar = getCalendar(this.state.year, this.state.month);
     console.log('calendar: ', calendar);
@@ -70,9 +122,22 @@ class Calendar extends Component {
       .map((week, key) =>
         chain(
           Array.from(week.by('day')).map(m => {
-            const ColumnClassName = m.month() !== month ? 'date-muted' : '';
+            let columnClassName = '';
+            if (m.month() !== month) {
+              columnClassName = 'date-muted';
+            } else if (
+              m.date() === moment().date() &&
+              m.month() === moment().month()
+            ) {
+              columnClassName = 'date-current';
+            }
             return (
-              <TableRowColumn key={m.format('D')} className={ColumnClassName}>
+              <TableRowColumn
+                key={m.utc()}
+                id={m.utc()}
+                className={columnClassName}
+                onMouseDown={this.handleClick}
+              >
                 {m.format('D')}
               </TableRowColumn>
             );
@@ -85,7 +150,7 @@ class Calendar extends Component {
     const renderCalendarDate = map(calendar, week =>
       map(
         Array.from(week.by('day'), m => (
-          <TableRowColumn key={m.format('D')}>{m.format('D')}</TableRowColumn>
+          <TableRowColumn key={m.utc()}>{m.format('D')}</TableRowColumn>
         ))
       )
     );
@@ -93,15 +158,32 @@ class Calendar extends Component {
     const rednerTableHeader = map(weekArray, item => (
       <TableHeaderColumn key={item}>{item}</TableHeaderColumn>
     ));
+
+    const renderNotes = chain(this.state[this.state.selectedDate])
+      .orderBy(['hour', 'asc'], ['minute', 'asc'])
+      .map((item, index) => (
+        <li key={index}>
+          {Moment(parseInt(this.state.selectedDate)).format('MMMM YYYY')}{' '}
+          {item.hour}
+          {'-'}
+          {item.minute}
+          {' : '}
+          {item.note}
+        </li>
+      ))
+      .value();
+
     return (
       <div className="calendar">
-        <div className="calendar__header" style={{ backgroundColor: tealA400 }}>
+        <div className="calendar__header" style={{ backgroundColor: tealA700 }}>
           <div className="calendar__header-left" onMouseDown={this.onClickPrev}>
             <i className="fas fa-angle-left" />
           </div>
           <div className="calendar__header-main">
-            <h1>{moment([year, month]).format('MMMM')}</h1>
-            <h2>{year}</h2>
+            <h1 style={{ color: grey100 }}>
+              {moment([year, month]).format('MMMM')}
+            </h1>
+            <h2 style={{ color: grey100 }}>{year}</h2>
           </div>
           <div
             className="calendar__header-right"
@@ -110,12 +192,45 @@ class Calendar extends Component {
             <i className="fas fa-angle-right" />
           </div>
         </div>
-        <Table className="calendar__main">
-          <TableHeader displaySelectAll={false}>
+        <Table
+          className="calendar__main"
+          selectable={false}
+          onCellClick={this.handleClick}
+        >
+          <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
             <TableRow>{rednerTableHeader}</TableRow>
           </TableHeader>
           <TableBody displayRowCheckbox={false}>{thruDate}</TableBody>
         </Table>
+        <div className="calendar__notes">
+          <ol>{renderNotes}</ol>
+        </div>
+        <Popover
+          open={this.state.open}
+          anchorEl={this.state.anchorEl}
+          anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+          targetOrigin={{ horizontal: 'left', vertical: 'top' }}
+          onRequestClose={this.handleRequestClose}
+        >
+          <div className="calendar__popover">
+            <TextField
+              id="hour"
+              hintText="Hour"
+              onChange={this.handleInputChange}
+            />
+            <TextField
+              id="minute"
+              hintText="Minute"
+              onChange={this.handleInputChange}
+            />
+            <TextField
+              id="note"
+              hintText="Event Name"
+              onChange={this.handleInputChange}
+            />
+            <RaisedButton label="Save" onClick={this.onClickSave} />
+          </div>
+        </Popover>
       </div>
     );
   }
