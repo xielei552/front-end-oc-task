@@ -3,16 +3,12 @@ import moment from 'moment';
 
 const getCalendar = (year, month) => {
   const startDate = moment([year, month]);
-  // console.log('startDate', startDate);
   const firstDay = moment(startDate).startOf('month');
   const endDay = moment(startDate).endOf('month');
   const monthRange = moment.range(firstDay, endDay);
-  // console.log('monthRange', monthRange);
 
   const weekList = Array.from(monthRange.by('week'));
-  // console.log('weekList', weekList);
   const weeks = map(weekList, month => month.week());
-  // console.log('weeks', weeks);
 
   let calendar = [];
 
@@ -37,7 +33,6 @@ const getCalendar = (year, month) => {
         .week(week)
         .day(6);
     }
-    console.log('firstWeekDay', firstWeekDay);
     const weekRange = moment.range(firstWeekDay, lastWeekDay);
     calendar.push(weekRange);
   }

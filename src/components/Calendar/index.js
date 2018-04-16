@@ -91,12 +91,18 @@ class Calendar extends Component {
     };
 
     this.onClickSave = () => {
-      const notes = this.state[this.state.selectedDate] || [];
+      const { year, month, hour, minute, note, selectedDate } = this.state;
+      const selectedMonth = Moment(parseInt(selectedDate)).month();
+      const selectedYear = Moment(parseInt(selectedDate)).year();
+      const notes = this.state[Moment([selectedYear, selectedMonth])] || [];
       this.setState({
-        [this.state.selectedDate]: concat(notes, {
-          hour: this.state.hour,
-          minute: this.state.minute,
-          note: this.state.note
+        [Moment([selectedYear, selectedMonth])]: concat(notes, {
+          selectedDate,
+          year,
+          month,
+          hour: parseInt(hour),
+          minute: parseInt(minute),
+          note
         })
       });
     };
@@ -155,11 +161,12 @@ class Calendar extends Component {
       <TableHeaderColumn key={item}>{item}</TableHeaderColumn>
     ));
 
-    const renderNotes = chain(this.state[selectedDate])
-      .orderBy(['hour', 'asc'], ['minute', 'asc'])
+    const renderNotes = chain(this.state[Moment([year, month])])
+      .sortBy(['selectedDate', 'hour', 'minute'])
       .map((item, index) => (
         <li key={index}>
-          {Moment(parseInt(selectedDate)).format('MMMM YYYY')} {item.hour}
+          {Moment(parseInt(item.selectedDate)).format('D MMMM YYYY')}{' '}
+          {item.hour}
           {':'}
           {item.minute}
           {' - '}
@@ -198,7 +205,7 @@ class Calendar extends Component {
           <TableBody displayRowCheckbox={false}>{thruDate}</TableBody>
         </Table>
         <div className="calendar__notes">
-          <ol>{renderNotes}</ol>
+          <ul>{renderNotes}</ul>
         </div>
         <Popover
           open={this.state.open}
